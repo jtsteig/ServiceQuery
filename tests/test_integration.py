@@ -6,7 +6,7 @@ import json
 class UserIntegrationTests(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        test_utils.make_delete_all_request('services')
+        test_utils.make_delete_all_request('service')
 
         body =  {
                     "businessName:": "Sample Business #3",
@@ -57,7 +57,7 @@ class UserIntegrationTests(unittest.TestCase):
                     }]
                 }
 
-        resp = test_utils.make_post_request('services', '', body)
+        resp = test_utils.make_post_request('service', '', body)
         respJson = resp.json()
         respBody = json.loads(respJson.get('body'))
         self.user_id = respBody.get('id')
@@ -66,8 +66,8 @@ class UserIntegrationTests(unittest.TestCase):
 #    def tearDownClass(self):
 #        test_utils.make_delete_all_request('users')
 
-    def test_get_all_users(self):
-        resp = test_utils.make_get_request('users', '')
+    def test_get_all_services(self):
+        resp = test_utils.make_get_request('service', '')
         respJson = resp.json()
         self.assertEqual(respJson.get('statusCode'), 200)
         respBody = respJson.get('body')
@@ -76,7 +76,7 @@ class UserIntegrationTests(unittest.TestCase):
         self.assertEqual(respBody[0].get('name'), 'testname2')
 
     def test_get_one_user(self):
-        resp = test_utils.make_get_request('users', self.user_id)
+        resp = test_utils.make_get_request('service', self.user_id)
         respJson = resp.json()
         self.assertEqual(respJson.get('statusCode'), 200)
         respBody = respJson.get('body')
