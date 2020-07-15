@@ -1,0 +1,8 @@
+*.tfvars
+build
+.terraform
+*.tfstate
+*.backup
+*.swp
+__pycache__
+*.lock.info
