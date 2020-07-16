@@ -1,21 +1,10 @@
-from sqlalchemy import Column, String, Integer, DateTime
-
 from utils.functionlogger import functionLogger
-from service.db_base import Base, engine
-from repository.jobrepository import Jobs
-from repository.cityrepository import Cities
+from table.citytable import CityTable
+from table.jobtable import JobTable
+from table.servicetable import ServiceTable
 
 
-class Services(Base):
-    __tablename__ = 'services'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    review_rating = Column(Integer, nullable=False)
-    open_time = Column(DateTime, nullable=False)
-    close_time = Column(DateTime, nullable=False)
-    address = Column(String, nullable=False)
-
+class Services(ServiceTable):
     def __init__(
                     self,
                     name,
@@ -28,17 +17,18 @@ class Services(Base):
                     state_abbreviation,
                     postal
                 ):
-        self.name = name
-        self.address_line_1 = address_line_1
-        self.address_line_2 = address_line_2
-        self.city = city
-        self.state_abbreviation = state_abbreviation
-        self.postal = postal
+        self.service = ServiceTable()
+        self.service.name = name
+        self.service.address_line_1 = address_line_1
+        self.service.address_line_2 = address_line_2
+        self.service.city = city
+        self.service.state_abbreviation = state_abbreviation
+        self.service.postal = postal
 
     @classmethod
     @functionLogger
     def InitQuery(self, session):
-        self.query = session.query(Services)
+        self.query = session.query(ServiceTable)
 
     @classmethod
     @functionLogger
@@ -48,16 +38,16 @@ class Services(Base):
     @classmethod
     @functionLogger
     def Create(self, session):
-        session.add(self)
+        session.add(self.service)
         session.flush()
-        session.refresh(self)
+        session.refresh(self.service)
         return self
 
     @classmethod
     @functionLogger
     def FilterByName(self, name):
         self.query = self.query\
-            .filter(Services.name.match(name))
+            .filter(ServiceTable.name.match(name))
         return self
 
     @classmethod
@@ -65,12 +55,12 @@ class Services(Base):
     def FilterByJobs(self, job):
         self.query = self.query\
             .join(
-                Jobs,
-                Jobs.service_id == self.id,
+                JobTable,
+                JobTable.service_id == self.id,
                 full=True
             )\
             .filter(
-                Jobs.job_name == job
+                JobTable.job_name == job
             )
         return self
 
@@ -79,12 +69,12 @@ class Services(Base):
     def FilterByCity(self, city):
         self.query = self.query\
             .join(
-                Cities,
-                Cities.service_id == self.id,
+                CityTable,
+                CityTable.service_id == self.id,
                 full=True
             )\
             .filter(
-                Cities.city_name == city
+                CityTable.city_name == city
             )
         return self
 
@@ -93,13 +83,13 @@ class Services(Base):
     def FilterByRating(self, rating):
         self.query = self.query\
             .filter(
-                    Services.review_rating >= rating
+                    ServiceTable.review_rating >= rating
             )
 
     @classmethod
     @functionLogger
     def DeleteAll(self, session):
-        session.query(Services).delete()
+        session.query(ServiceTable).delete()
         session.flush()
 
     @classmethod
@@ -128,5 +118,3 @@ class Services(Base):
     @functionLogger
     def Results(self, offset=0, limit=10):
         return self.query.offset(offset).limit(limit).all()
-
-Base.metadata.create_all(engine)

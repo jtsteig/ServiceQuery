@@ -3,7 +3,7 @@ from lambdarest import lambda_handler
 from service.db_base import Base, Session, engine
 from utils.functionlogger import functionLogger
 from service.serviceservice import ServicesService
-from schemas.serviceschema import ServiceSchema
+from schema.serviceschema import ServiceSchema
 
 import json
 import logging
@@ -76,7 +76,7 @@ def handleCreateService(event):
     except Exception as err:
         return {
             'statusCode': 400,
-            'body': 'Error creating user: {}'.format(err)
+            'body': 'Error creating service: {}'.format(err)
         }
 
 

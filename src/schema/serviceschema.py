@@ -1,9 +1,9 @@
-from marshmallow import Schema, OneOf, fields, post_load
-from models.servicemodel import Service
+from marshmallow import Schema, fields, post_load, validate
+from model.servicemodel import Service
 
 
 class BusinessHoursSchema(Schema):
-    dayOfWeek = fields.Str(validate=OneOf([
+    dayOfWeek = fields.Str(validate=validate.OneOf([
             "Monday",
             "Tuesday",
             "Wednesday",
@@ -13,15 +13,15 @@ class BusinessHoursSchema(Schema):
             "Sunday"
         ]),
         required=True)
-    open_at = fields.Int(attribute="open", required=True)
-    close_at = fields.Int(attribute="close", required=True)
+    open_time = fields.Int(data_key="open", required=True)
+    close_time = fields.Int(data_key="close", required=True)
 
 
 class BusinessAddressSchema(Schema):
-    address_line_1 = fields.Str(attribute="addressLine1", required=True)
-    address_line_2 = fields.Str(attribute="addressLine2", required=False)
+    address_line_1 = fields.Str(data_key="addressLine1", required=True)
+    address_line_2 = fields.Str(data_key="addressLine2", required=False)
     city = fields.Str(required=True)
-    state_abbreviation = fields.Str(attribute="stateAbbr", required=True)
+    state_abbreviation = fields.Str(data_key="stateAbbr", required=True)
     postal = fields.Str(required=True)
 
 
@@ -34,9 +34,9 @@ class ServiceSchema(Schema):
     id = fields.Str(required=False)
     businessName = fields.Str(required=True)
     businessHours = fields.List(
-                        fields.Nested(BusinessHoursSchema),
-                        required=True
-                    )
+                       fields.Nested(BusinessHoursSchema),
+                       required=True
+                   )
     businessAddress = fields.Nested(BusinessAddressSchema, required=True)
     operatingCities = fields.List(fields.Str, required=True)
     workTypes = fields.List(fields.Str, required=True)

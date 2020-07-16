@@ -8,7 +8,7 @@ class UserIntegrationTests(unittest.TestCase):
     def setUpClass(self):
         test_utils.make_delete_all_request('service')
 
-        body =  {
+        body = {
                     "businessName:": "Sample Business #3",
                     "businessHours": [{
                             "dayOfWeek": "Monday",
@@ -59,6 +59,7 @@ class UserIntegrationTests(unittest.TestCase):
 
         resp = test_utils.make_post_request('service', '', body)
         respJson = resp.json()
+        print(respJson)
         respBody = json.loads(respJson.get('body'))
         self.user_id = respBody.get('id')
 
