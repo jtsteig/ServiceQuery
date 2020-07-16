@@ -7,11 +7,13 @@ class ServiceTable(Base):
     __tablename__ = 'services'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    business_name = Column(String, nullable=False)
     review_rating = Column(Integer, nullable=False)
-    open_time = Column(Integer, nullable=False)
-    close_time = Column(Integer, nullable=False)
-    address = Column(String, nullable=False)
+    address_line_1 = Column(String, nullable=False)
+    address_line_2 = Column(String, nullable=False)
+    city = Column(String, nullable=False)
+    state_abbreviation = Column(String, nullable=False)
+    postal = Column(String, nullable=False)
     children = relationship('Child')
 
 

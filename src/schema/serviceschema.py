@@ -1,5 +1,8 @@
 from marshmallow import Schema, fields, post_load, validate
 from model.servicemodel import Service
+from model.businesshoursmodel import BusinessHours
+from model.businessaddressmodel import BusinessAddress
+from model.reviewmodel import Review
 
 
 class BusinessHoursSchema(Schema):
@@ -16,6 +19,10 @@ class BusinessHoursSchema(Schema):
     open_time = fields.Int(data_key="open", required=True)
     close_time = fields.Int(data_key="close", required=True)
 
+    @post_load
+    def MakeBusinessHours(self, data, **kwargs):
+        return BusinessHours(**data)
+
 
 class BusinessAddressSchema(Schema):
     address_line_1 = fields.Str(data_key="addressLine1", required=True)
@@ -24,23 +31,39 @@ class BusinessAddressSchema(Schema):
     state_abbreviation = fields.Str(data_key="stateAbbr", required=True)
     postal = fields.Str(required=True)
 
+    @post_load
+    def MakeBusinessAddress(self, data, **kwargs):
+        return BusinessAddress(**data)
+
 
 class ReviewSchema(Schema):
-    ratingScore = fields.Int(required=True)
-    customerComment = fields.Str(required=False)
+    rating_score = fields.Int(data_key="ratingScore", required=True)
+    customer_comment = fields.Str(data_key="customerComment", required=False)
+
+    @post_load
+    def MakeReview(self, data, **kwargs):
+        return Review(**data)
 
 
 class ServiceSchema(Schema):
     id = fields.Str(required=False)
-    businessName = fields.Str(required=True)
+    business_name = fields.Str(data_key="businessName", required=True)
     businessHours = fields.List(
                        fields.Nested(BusinessHoursSchema),
                        required=True
                    )
-    businessAddress = fields.Nested(BusinessAddressSchema, required=True)
-    operatingCities = fields.List(fields.Str, required=True)
+    business_address = fields.Nested(
+        BusinessAddressSchema,
+        data_key="businessAddress",
+        required=True
+    )
+    operating_cities = fields.List(
+        fields.Str,
+        data_key="operatingCities",
+        required=True
+    )
     workTypes = fields.List(fields.Str, required=True)
-    reviews = fields.Nested(ReviewSchema, required=True)
+    reviews = fields.List(fields.Nested(ReviewSchema, required=True))
 
     @post_load
     def makeService(self, data, **kwargs):

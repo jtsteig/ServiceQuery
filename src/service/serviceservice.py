@@ -32,16 +32,23 @@ class ServicesService:
     def Results(self):
         return self.query.Results()
 
-    def Create(self, service):
-        service = Services(
-            service.name,
-            service.review_rating,
-            service.open_time,
-            service.close_time,
-            service.address_line_1,
-            service.address_line_2,
-            service.city,
-            service.state_abbreviation,
-            service.postal
+    def Create(
+            self,
+            business_name,
+            review_rating,
+            address_line_1,
+            address_line_2,
+            city,
+            state,
+            postal
+    ):
+        serviceRepo = Services(
+            business_name=business_name,
+            review_rating=review_rating,
+            address_line_1=address_line_1,
+            address_line_2=address_line_2,
+            city=city,
+            state=state,
+            postal=postal
         )
-        return service.Create()
+        return serviceRepo.Create()
