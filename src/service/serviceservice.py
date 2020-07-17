@@ -79,12 +79,12 @@ class ServicesService:
 
     @classmethod
     @functionLogger
-    def GetJobsForService(
+    def GetJobForService(
         self,
         service_id,
         session
     ):
-        return Jobs.GetJobsForService(service_id, session)
+        return Jobs.GetJobForService(service_id, session)
 
     @classmethod
     @functionLogger
@@ -113,7 +113,7 @@ class ServicesService:
             reviews=self.GetReviewsForService(service.id, session),
             business_hours=self.GetHoursForService(service.id, session),
             operating_cities=self.GetCitiesForService(service.id, session),
-            work_types=self.GetJobsForService(service.id, session)
+            work_types=self.GetJobForService(service.id, session)
         )
 
     @classmethod
@@ -143,7 +143,7 @@ class ServicesService:
         for review in createService.reviews:
             reviewRepo = Reviews(
                 rating_score=review.rating_score,
-                review_comment=review.review_comment,
+                customer_comment=review.customer_comment,
                 service_id=service.id
             )
             reviewRepo.Create(session)

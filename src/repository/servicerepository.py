@@ -1,7 +1,8 @@
 from utils.functionlogger import functionLogger
 from table.citytable import CityTable
-from table.jobtable import JobTable
 from table.servicetable import ServiceTable
+
+from repository.jobrepository import Jobs
 
 
 class Services():
@@ -46,12 +47,12 @@ class Services():
     def FilterByJobs(self, job):
         self.query = self.query\
             .join(
-                JobTable,
-                JobTable.service_id == self.id,
+                Jobs,
+                Jobs.service_id == self.id,
                 full=True
             )\
             .filter(
-                JobTable.job_name == job
+                Jobs.job_name == job
             )
         return self
 

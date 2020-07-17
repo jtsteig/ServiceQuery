@@ -16,8 +16,8 @@ class BusinessHoursSchema(Schema):
             "Sunday"
         ]),
         required=True)
-    open_time = fields.Int(data_key="open", required=True)
-    close_time = fields.Int(data_key="close", required=True)
+    open_at = fields.Int(data_key="open", required=True)
+    close_at = fields.Int(data_key="close", required=True)
 
     @post_load
     def MakeBusinessHours(self, data, **kwargs):
@@ -59,11 +59,15 @@ class ServiceSchema(Schema):
         required=True
     )
     operating_cities = fields.List(
-        fields.Str,
+        fields.String(),
         data_key="operatingCities",
         required=True
     )
-    work_types = fields.List(fields.Str, data_key="workTypes", required=True)
+    work_types = fields.List(
+        fields.String(),
+        data_key="workTypes",
+        required=True
+    )
     reviews = fields.List(fields.Nested(ReviewSchema, required=True))
 
     @post_load

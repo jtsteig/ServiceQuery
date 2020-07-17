@@ -37,7 +37,7 @@ class Addresses():
             AddressTable
         ).filter(
             AddressTable.service_id == service_id
-        ).all()
+        )
 
     @functionLogger
     def Create(self, session):

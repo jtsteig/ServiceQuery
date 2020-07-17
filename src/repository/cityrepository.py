@@ -25,7 +25,7 @@ class Cities(CityTable):
             CityTable
         ).filter(
             CityTable.service_id == service_id
-        ).all()
+        )
 
     @functionLogger
     def Create(self, session):
