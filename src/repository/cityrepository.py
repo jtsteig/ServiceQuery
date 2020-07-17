@@ -1,4 +1,8 @@
-from table.citytable import CityTable
+from sqlalchemy import Column, Integer, String, ForeignKey
+
+from service.db_base import Base, engine
+from table.servicetable import ServiceTable
+
 from utils.functionlogger import functionLogger
 
 import logging
@@ -7,7 +11,13 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-class Cities(CityTable):
+class Cities(Base):
+    __tablename__ = 'cities'
+
+    id = Column(Integer, primary_key=True)
+    service_id = Column(Integer, ForeignKey(ServiceTable.id), nullable=False)
+    city_name = Column(String, nullable=False)
+
     def __init__(self, service_id, city_name):
         self.service_id = service_id
         self.city_name = city_name
@@ -15,24 +25,24 @@ class Cities(CityTable):
     @classmethod
     @functionLogger
     def DeleteAll(self, session):
-        session.query(CityTable).delete()
+        session.query(Cities).delete()
         session.flush()
 
     @classmethod
     @functionLogger
     def GetCitiesForService(self, service_id, session):
         return session.query(
-            CityTable
+            Cities
         ).filter(
-            CityTable.service_id == service_id
+            Cities.service_id == service_id
         )
 
     @functionLogger
     def Create(self, session):
-        city = CityTable()
-        city.service_id = self.service_id
-        city.city_name = self.city_name
-        session.add(city)
+        session.add(self)
         session.flush()
-        session.refresh(city)
-        return city
+        session.refresh(self)
+        return self
+
+
+Base.metadata.create_all(engine)

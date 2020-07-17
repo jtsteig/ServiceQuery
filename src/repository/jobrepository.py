@@ -37,13 +37,10 @@ class Jobs(Base):
 
     @functionLogger
     def Create(self, session):
-        job = Jobs()
-        job.service_id = self.service_id
-        job.job_name = self.job_name
-        session.add(job)
+        session.add(self)
         session.flush()
-        session.refresh(job)
-        return job
+        session.refresh(self)
+        return self
 
 
 Base.metadata.create_all(engine)
