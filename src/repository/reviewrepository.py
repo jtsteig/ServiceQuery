@@ -15,13 +15,13 @@ class Reviews(Base):
 
     id = Column(Integer, primary_key=True)
     service_id = Column(Integer, ForeignKey(ServiceTable.id), nullable=False)
-    review_comment = Column(String, nullable=False)
-    review_rating = Column(Integer, nullable=False)
+    customer_comment = Column(String, nullable=False)
+    rating_score = Column(Integer, nullable=False)
 
-    def __init__(self, service_id, review_comment, review_rating):
+    def __init__(self, service_id, customer_comment, rating_score):
         self.service_id = service_id
-        self.review_comment = review_comment
-        self.review_rating = review_rating
+        self.customer_comment = customer_comment
+        self.rating_score = rating_score
 
     @classmethod
     @functionLogger

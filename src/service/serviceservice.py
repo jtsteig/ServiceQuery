@@ -142,7 +142,7 @@ class ServicesService:
 
         for review in createService.reviews:
             reviewRepo = Reviews(
-                review_rating=review.review_rating,
+                rating_score=review.rating_score,
                 review_comment=review.review_comment,
                 service_id=service.id
             )
