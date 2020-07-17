@@ -4,43 +4,35 @@ from table.jobtable import JobTable
 from table.servicetable import ServiceTable
 
 
-class Services(ServiceTable):
+class Services():
     def __init__(
                     self,
                     business_name,
                     review_rating,
-                    address_line_1,
-                    address_line_2,
-                    city,
-                    state_abbreviation,
-                    postal
                 ):
         self.service = ServiceTable()
         self.service.business_name = business_name
         self.service.review_rating = review_rating
-        self.service.address_line_1 = address_line_1
-        self.service.address_line_2 = address_line_2
-        self.service.city = city
-        self.service.state_abbreviation = state_abbreviation
-        self.service.postal = postal
+        self.query = None
 
     @classmethod
     @functionLogger
     def InitQuery(self, session):
         self.query = session.query(ServiceTable)
+        return self
 
     @classmethod
     @functionLogger
-    def GetOne(self, service_id):
-        return self.query.filter_by(id=service_id).first()
+    def FilterById(self, service_id):
+        self.query.filter_by(id=service_id)
+        return self
 
-    @classmethod
     @functionLogger
     def Create(self, session):
         session.add(self.service)
         session.flush()
         session.refresh(self.service)
-        return self
+        return self.service
 
     @classmethod
     @functionLogger

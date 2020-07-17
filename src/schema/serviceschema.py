@@ -6,7 +6,7 @@ from model.reviewmodel import Review
 
 
 class BusinessHoursSchema(Schema):
-    dayOfWeek = fields.Str(validate=validate.OneOf([
+    day_of_week = fields.Str(data_key="dayOfWeek", validate=validate.OneOf([
             "Monday",
             "Tuesday",
             "Wednesday",
@@ -48,8 +48,9 @@ class ReviewSchema(Schema):
 class ServiceSchema(Schema):
     id = fields.Str(required=False)
     business_name = fields.Str(data_key="businessName", required=True)
-    businessHours = fields.List(
+    business_hours = fields.List(
                        fields.Nested(BusinessHoursSchema),
+                       data_key="businessHours",
                        required=True
                    )
     business_address = fields.Nested(
@@ -62,7 +63,7 @@ class ServiceSchema(Schema):
         data_key="operatingCities",
         required=True
     )
-    workTypes = fields.List(fields.Str, required=True)
+    work_types = fields.List(fields.Str, data_key="workTypes", required=True)
     reviews = fields.List(fields.Nested(ReviewSchema, required=True))
 
     @post_load

@@ -20,8 +20,12 @@ class Cities(CityTable):
 
     @classmethod
     @functionLogger
-    def GetAll(self, session):
-        return session.query(CityTable).all()
+    def GetCitiesForService(self, service_id, session):
+        return session.query(
+            CityTable
+        ).filter(
+            CityTable.service_id == service_id
+        ).all()
 
     @functionLogger
     def Create(self, session):

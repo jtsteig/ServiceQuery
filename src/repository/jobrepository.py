@@ -20,8 +20,12 @@ class Jobs():
 
     @classmethod
     @functionLogger
-    def GetAll(self, session):
-        return session.query(JobTable).all()
+    def GetJobForService(self, service_id, session):
+        return session.query(
+            JobTable
+        ).filter(
+            JobTable.service_id == service_id
+        ).all()
 
     @functionLogger
     def Create(self, session):

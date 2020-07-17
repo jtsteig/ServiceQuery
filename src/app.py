@@ -63,13 +63,8 @@ def handleCreateService(event):
     try:
         createService = serviceSchema.loads(event["body"])
         user = ServicesService.Create(
-            business_name=createService.business_name,
-            review_rating=createService.review_rating,
-            address_line_1=createService.business_address.address_line_1,
-            address_line_2=createService.business_address.address_line_2,
-            city=createService.business_address.city,
-            state=createService.business_address.state,
-            postal=createService.business_address.postal
+            createService,
+            session=session
         )
         session.commit()
         return {

@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import validates
 from service.db_base import Base, engine
 from schema.validations import Validations
-from repository.servicerepository import Services
+from table.servicetable import ServiceTable
 from utils.functionlogger import functionLogger
 
 import logging
@@ -15,7 +15,7 @@ class Hours(Base):
     __tablename__ = 'hours'
 
     id = Column(Integer, primary_key=True)
-    service_id = Column(Integer, ForeignKey(Services.id), nullable=False)
+    service_id = Column(Integer, ForeignKey(ServiceTable.id), nullable=False)
     day_of_week = Column(String, nullable=False)
     open_at = Column(Integer, nullable=False)
     close_at = Column(Integer, nullable=False)
@@ -42,8 +42,12 @@ class Hours(Base):
 
     @classmethod
     @functionLogger
-    def GetAll(self, session):
-        return session.query(Hours).all()
+    def GetHoursForService(self, service_id, session):
+        return session.query(
+            Hours
+        ).filter(
+            Hours.service_id == service_id
+        )
 
     @functionLogger
     def Create(self, session):

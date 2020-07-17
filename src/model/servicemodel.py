@@ -4,9 +4,11 @@ class Service:
                     business_name,
                     business_address,
                     reviews,
+                    business_hours,
                     operating_cities,
                     work_types
     ):
+        self.business_hours = business_hours
         self.business_name = business_name
         self.business_address = business_address
         self.reviews = reviews

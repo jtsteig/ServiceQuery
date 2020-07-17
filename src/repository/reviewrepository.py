@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 
 from service.db_base import Base, engine
-from repository.servicerepository import Services
+from table.servicetable import ServiceTable
 from utils.functionlogger import functionLogger
 
 import logging
@@ -14,7 +14,7 @@ class Reviews(Base):
     __tablename__ = 'reviews'
 
     id = Column(Integer, primary_key=True)
-    service_id = Column(Integer, ForeignKey(Services.id), nullable=False)
+    service_id = Column(Integer, ForeignKey(ServiceTable.id), nullable=False)
     review_comment = Column(String, nullable=False)
     review_rating = Column(Integer, nullable=False)
 
@@ -28,11 +28,6 @@ class Reviews(Base):
     def DeleteAll(self, session):
         session.query(Reviews).delete()
         session.flush()
-
-    @classmethod
-    @functionLogger
-    def GetAll(self, session):
-        return session.query(Reviews).all()
 
     @classmethod
     @functionLogger
