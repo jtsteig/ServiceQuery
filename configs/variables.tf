@@ -5,8 +5,3 @@ variable "db_user" {
 variable "db_password" {
   type = string
 }
-
-variable "region" {
-  type = string
-}
-

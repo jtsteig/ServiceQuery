@@ -98,7 +98,7 @@ class ServicesService:
         service = Services(review_rating, self.session)
 
         for city in createService.operating_cities:
-            cityRepo = Cities(city.city_name)
+            cityRepo = Cities(city)
             service.cities.append(cityRepo)
 
         for review in createService.reviews:
@@ -109,10 +109,7 @@ class ServicesService:
             service.reviews.append(reviewRepo)
 
         for job in createService.work_types:
-            jobRepo = Jobs(
-                rating_score=review.rating_score,
-                customer_comment=review.customer_comment
-            )
+            jobRepo = Jobs(job)
             service.jobs.append(jobRepo)
 
         for hours in createService.business_hours:

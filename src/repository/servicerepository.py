@@ -43,7 +43,7 @@ class Services(Base):
     @functionLogger
     def FilterByName(self, name):
         self.query = self.query\
-            .filter(Services.name == name)
+            .filter(Services.business_name == name)
         return self
 
     @functionLogger
@@ -76,20 +76,20 @@ class Services(Base):
     def SortByName(self, descending):
         if descending:
             self.query = self.query\
-                .order_by(self.name.desc())
+                .order_by(Services.business_name.desc())
         else:
             self.query = self.query\
-                .order_by(self.name)
+                .order_by(Services.business_name)
         return self
 
     @functionLogger
     def SortByRating(self, descending=False):
         if descending:
             self.query = self.query\
-                .order_by(self.review_rating)
+                .order_by(Services.review_rating)
         else:
             self.query = self.query\
-                .order_by(self.review_rating.desc())
+                .order_by(Services.review_rating.desc())
         return self
 
     @classmethod

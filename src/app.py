@@ -154,9 +154,9 @@ def handleCreateService(event):
         schema = ServiceSchema(many=True)
         results = []
         for service in schema.load(services):
-            results.append(ServicesService.Create(
-                service,
-                session=session
+            servicesService = ServicesService(session)
+            results.append(servicesService.Create(
+                service
             ))
             session.commit()
 
