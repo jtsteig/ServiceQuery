@@ -2,7 +2,7 @@ from utils.functionlogger import functionLogger
 from sqlalchemy import Column, Integer, String, ForeignKey
 
 from service.db_base import Base, engine
-from table.servicetable import ServiceTable
+from repository.servicerepository import Services
 import logging
 
 logger = logging.getLogger()
@@ -13,12 +13,11 @@ class Jobs(Base):
     __tablename__ = 'jobs'
 
     id = Column(Integer, primary_key=True)
-    service_id = Column(Integer, ForeignKey(ServiceTable.id), nullable=False)
+    service_id = Column(Integer, ForeignKey(Services.id), nullable=False)
     job_name = Column(String, nullable=False)
 
-    def __init__(self, service_id, job_name):
-        self.service_id = service_id
-        self.job_name = job_name
+    def __init__(self, session):
+        self.session = session
 
     @classmethod
     @functionLogger
@@ -36,11 +35,19 @@ class Jobs(Base):
         )
 
     @functionLogger
-    def Create(self, session):
-        session.add(self)
-        session.flush()
-        session.refresh(self)
+    def Create(self, service_id, job_name):
+        self.service_id = service_id
+        self.job_name = job_name
+        self.session.add(self)
+        self.session.flush()
+        self.session.refresh(self)
         return self
+
+    def __repr__(self):
+        return self.job_name
+
+    def __str__(self):
+        return self.job_name
 
 
 Base.metadata.create_all(engine)

@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 
 from service.db_base import Base, engine
-from table.servicetable import ServiceTable
 from utils.functionlogger import functionLogger
+from repository.servicerepository import Services
 
 import logging
 
@@ -14,14 +14,12 @@ class Reviews(Base):
     __tablename__ = 'reviews'
 
     id = Column(Integer, primary_key=True)
-    service_id = Column(Integer, ForeignKey(ServiceTable.id), nullable=False)
+    service_id = Column(Integer, ForeignKey(Services.id), nullable=False)
     customer_comment = Column(String, nullable=False)
     rating_score = Column(Integer, nullable=False)
 
-    def __init__(self, service_id, customer_comment, rating_score):
-        self.service_id = service_id
-        self.customer_comment = customer_comment
-        self.rating_score = rating_score
+    def __init__(self, session):
+        self.session = session
 
     @classmethod
     @functionLogger
@@ -39,10 +37,13 @@ class Reviews(Base):
             .all()
 
     @functionLogger
-    def Create(self, session):
-        session.add(self)
-        session.flush()
-        session.refresh(self)
+    def Create(self, service_id, customer_comment, rating_score):
+        self.service_id = service_id
+        self.customer_comment = customer_comment
+        self.rating_score = rating_score
+        self.session.add(self)
+        self.session.flush()
+        self.session.refresh(self)
         return self
 
 

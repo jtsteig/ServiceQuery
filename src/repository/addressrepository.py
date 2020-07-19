@@ -2,7 +2,7 @@ from utils.functionlogger import functionLogger
 from sqlalchemy import Column, Integer, String, ForeignKey
 
 from service.db_base import Base, engine
-from table.servicetable import ServiceTable
+from repository.servicerepository import Services
 
 import logging
 
@@ -14,7 +14,7 @@ class Addresses(Base):
     __tablename__ = 'addresses'
 
     id = Column(Integer, primary_key=True)
-    service_id = Column(Integer, ForeignKey(ServiceTable.id), nullable=False)
+    service_id = Column(Integer, ForeignKey(Services.id), nullable=False)
     address_line_1 = Column(String, nullable=False)
     address_line_2 = Column(String, nullable=True)
     city = Column(String, nullable=False)
@@ -23,19 +23,9 @@ class Addresses(Base):
 
     def __init__(
         self,
-        service_id,
-        address_line_1,
-        address_line_2,
-        city,
-        state_abbreviation,
-        postal
+        session
     ):
-        self.service_id = service_id
-        self.address_line_1 = address_line_1
-        self.address_line_2 = address_line_2
-        self.city = city
-        self.state_abbreviation = state_abbreviation
-        self.postal = postal
+        self.session = session
 
     @classmethod
     @functionLogger
@@ -50,13 +40,27 @@ class Addresses(Base):
             Addresses
         ).filter(
             Addresses.service_id == service_id
-        )
+        ).first()
 
     @functionLogger
-    def Create(self, session):
-        session.add(self)
-        session.flush()
-        session.refresh(self)
+    def Create(
+        self,
+        service_id,
+        address_line_1,
+        address_line_2,
+        city,
+        state_abbreviation,
+        postal
+    ):
+        self.service_id = service_id
+        self.address_line_1 = address_line_1
+        self.address_line_2 = address_line_2
+        self.city = city
+        self.state_abbreviation = state_abbreviation
+        self.postal = postal
+        self.session.add(self)
+        self.session.flush()
+        self.session.refresh(self)
         return self
 
 

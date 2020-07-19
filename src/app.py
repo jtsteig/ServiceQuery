@@ -2,6 +2,7 @@ from lambdarest import lambda_handler
 
 from service.db_base import Base, Session, engine
 from utils.functionlogger import functionLogger
+from utils.filterFactory import FilterFactory
 from service.serviceservice import ServicesService
 from schema.serviceschema import ServiceSchema
 
@@ -14,14 +15,41 @@ logger.setLevel(logging.INFO)
 
 serviceSchema = ServiceSchema()
 
-session = Session()
+
+def getOffset(event):
+    if event.get('queryStringParameters') is not None:
+        if 'offset' in event['queryStringParameters']:
+            return event['queryStringParameters']['offset']
+    return 0
+
+
+def getLimit(event):
+    if event.get('queryStringParameters') is not None:
+        if 'limit' in event['queryStringParameters']:
+            return event['queryStringParameters']['limit']
+    return 10
+
+
+def applyFiltersOnQueries(event, service):
+    if event.get('queryStringParameters') is not None:
+        for parameter, value in event['queryStringParameters'].items():
+            filterFactory = FilterFactory(parameter, value)
+            service = filterFactory.AppendFilter(service)
+
+    return service
 
 
 @lambda_handler.handle("get", path="/service")
 @functionLogger
 def handleGetAllServices(event):
+    session = Session()
     try:
-        services = ServicesService.GetAll(session)
+        services = ServicesService(
+            session
+        ).Results(
+            getLimit(event),
+            getOffset(event)
+        )
         results = [json.loads(serviceSchema.dumps(i)) for i in services]
         session.commit()
         return {
@@ -31,29 +59,52 @@ def handleGetAllServices(event):
     except Exception:
         return {
             'statusCode': 500,
-            'body': traceback.format_err()
+            'body': traceback.format_exc()
         }
+
+
+@lambda_handler.handle("get", path="/service/filter")
+@functionLogger
+def handleFiter(event, session):
+    session = Session()
+    service = ServicesService(session)
+    return applyFiltersOnQueries(
+        event,
+        service
+    ).Results(
+        getLimit(event),
+        getOffset(event)
+    )
 
 
 @lambda_handler.handle("get", path="/service/<int:id>")
 @functionLogger
-def handleGetService(event, id):
+def handleGetById(event, service_id):
     try:
-        user = ServicesService.Get(id, session)
+        session = Session()
+        service = ServicesService(
+            session
+        ).FilterById(
+            service_id, session
+        ).Results(
+            session=session,
+            offset=0,
+            limit=1)
+
         session.commit()
-        if user is None:
+        if service is None:
             return {
                 'statusCode': 404
             }
 
         return {
             'statusCode': 200,
-            'body': serviceSchema.dump(user)
+            'body': serviceSchema.dump(service)
         }
     except Exception:
         return {
             'statusCode': 500,
-            'body': traceback.format_err()
+            'body': traceback.format_exc()
         }
 
 
@@ -61,15 +112,20 @@ def handleGetService(event, id):
 @functionLogger
 def handleCreateService(event):
     try:
-        createService = serviceSchema.loads(event["body"])
-        user = ServicesService.Create(
-            createService,
-            session=session
-        )
-        session.commit()
+        session = Session()
+        services = json.loads(event['body'])
+        schema = ServiceSchema(many=True)
+        results = []
+        for service in schema.load(services):
+            results.append(ServicesService.Create(
+                service,
+                session=session
+            ))
+            session.commit()
+
         return {
             'statusCode': 200,
-            'body': serviceSchema.dumps(user)
+            'body': schema.dumps(results)
         }
     except json.decoder.JSONDecodeError as jsonErr:
         return {
@@ -87,6 +143,7 @@ def handleCreateService(event):
 @functionLogger
 def handleDeleteAll(event):
     try:
+        session = Session()
         ServicesService.DeleteAll(session)
         session.commit()
         return {
