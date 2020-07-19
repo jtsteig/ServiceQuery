@@ -66,15 +66,25 @@ def handleGetAllServices(event):
 @lambda_handler.handle("get", path="/service/filter")
 @functionLogger
 def handleFiter(event):
-    session = Session()
-    service = ServicesService(session)
-    return applyFiltersOnQueries(
-        event,
-        service
-    ).Results(
-        getLimit(event),
-        getOffset(event)
-    )
+    try:
+        session = Session()
+        service = ServicesService(session)
+        filteredServices = applyFiltersOnQueries(
+            event,
+            service
+        ).Results(
+            getLimit(event),
+            getOffset(event)
+        )
+        return {
+            'statusCode': 200,
+            'body': serviceSchema.dumps(filteredServices)
+        }
+    except Exception:
+        return {
+            'statusCode': 500,
+            'body': traceback.format_exc()
+        }
 
 
 @lambda_handler.handle("get", path="/service/<int:id>")
