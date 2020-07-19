@@ -65,7 +65,7 @@ def handleGetAllServices(event):
 
 @lambda_handler.handle("get", path="/service/filter")
 @functionLogger
-def handleFiter(event, session):
+def handleFiter(event):
     session = Session()
     service = ServicesService(session)
     return applyFiltersOnQueries(

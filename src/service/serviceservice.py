@@ -13,7 +13,7 @@ from model.servicemodel import Service
 
 class ServicesService:
     def __init__(self, session):
-        self.serviceRepo = Services(session)
+        self.serviceRepo = Services(0, session)
         self.session = session
 
     @classmethod
