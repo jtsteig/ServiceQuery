@@ -18,32 +18,14 @@ class Cities(Base):
     service_id = Column(Integer, ForeignKey(Services.id), nullable=False)
     city_name = Column(String, nullable=False)
 
-    def __init__(self, session):
-        self.session = session
+    def __init__(self, city_name):
+        self.city_name = city_name
 
     @classmethod
     @functionLogger
     def DeleteAll(self, session):
         session.query(Cities).delete()
         session.flush()
-
-    @classmethod
-    @functionLogger
-    def GetCitiesForService(self, service_id, session):
-        return session.query(
-            Cities
-        ).filter(
-            Cities.service_id == service_id
-        )
-
-    @functionLogger
-    def Create(self, service_id, city_name):
-        self.service_id = service_id
-        self.city_name = city_name
-        self.session.add(self)
-        self.session.flush()
-        self.session.refresh(self)
-        return self
 
     def __str__(self):
         return self.city_name

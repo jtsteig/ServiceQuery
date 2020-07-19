@@ -20,8 +20,10 @@ class Hours(Base):
     open_at = Column(Integer, nullable=False)
     close_at = Column(Integer, nullable=False)
 
-    def __init__(self, session):
-        self.session = session
+    def __init__(self, day_of_week, open_at, close_at):
+        self.day_of_week = day_of_week
+        self.open_at = open_at
+        self.close_at = open_at
 
     @validates('open_at')
     def validates_open_at(self, key, open_at):
@@ -36,32 +38,6 @@ class Hours(Base):
     def DeleteAll(self, session):
         session.query(Hours).delete()
         session.flush()
-
-    @classmethod
-    @functionLogger
-    def GetHoursForService(self, service_id, session):
-        return session.query(
-            Hours
-        ).filter(
-            Hours.service_id == service_id
-        )
-
-    @functionLogger
-    def Create(
-        self,
-        service_id,
-        day_of_week,
-        open_at,
-        close_at
-    ):
-        self.service_id = service_id
-        self.day_of_week = day_of_week
-        self.open_at = open_at
-        self.close_at = close_at
-        self.session.add(self)
-        self.session.flush()
-        self.session.refresh(self)
-        return self
 
 
 Base.metadata.create_all(engine)

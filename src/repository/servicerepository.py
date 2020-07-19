@@ -21,9 +21,11 @@ class Services(Base):
 
     def __init__(
                     self,
+                    review_rating,
                     session
     ):
         self.query = session.query(Services)
+        self.review_rating = review_rating
         self.session = session
 
     @functionLogger
@@ -32,39 +34,36 @@ class Services(Base):
         return self
 
     @functionLogger
-    def Create(self, business_name, review_rating, hash_value):
-        self.business_name = business_name
-        self.review_rating = review_rating
-        self.hash_values = hash_value
-        self.session.add(self)
-        self.session.flush()
-        self.session.refresh(self)
+    def Create(self, session):
+        session.add(self)
+        session.flush()
+        session.refresh(self)
         return self
 
     @functionLogger
     def FilterByName(self, name):
         self.query = self.query\
-            .filter(Services.name.match(name))
+            .filter(Services.name == name)
         return self
 
     @functionLogger
     def FilterByJobs(self, job):
         self.query = self.query\
+            .join(Services.jobs, aliased=True)\
             .filter_by(job_name=job)
         return self
 
     @functionLogger
     def FilterByCity(self, city):
         self.query = self.query\
+            .join(Services.cities, aliased=True)\
             .filter_by(city_name=city)
         return self
 
     @functionLogger
     def FilterByRating(self, rating):
         self.query = self.query\
-            .filter(
-                    Services.review_rating >= rating
-            )
+            .filter(self.review_rating >= rating)
         return self
 
     @classmethod

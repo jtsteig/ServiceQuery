@@ -58,49 +58,14 @@ class ServicesService:
         return ret
 
     @functionLogger
-    def GetReviewsForService(
-        self,
-        service_id
-    ):
-        return Reviews.GetReviewsForService(service_id, self.session)
-
-    @functionLogger
-    def GetAddressForService(
-        self,
-        service_id
-    ):
-        return Addresses.GetAddressForService(service_id, self.session)
-
-    @functionLogger
-    def GetJobForService(
-        self,
-        service_id
-    ):
-        return Jobs.GetJobForService(service_id, self.session)
-
-    @functionLogger
-    def GetHoursForService(
-        self,
-        service_id
-    ):
-        return Hours.GetHoursForService(service_id, self.session)
-
-    @functionLogger
-    def GetCitiesForService(
-        self,
-        service_id
-    ):
-        return Cities.GetCitiesForService(service_id, self.session)
-
-    @functionLogger
     def GetModelForService(self, service):
         return Service(
             business_name=service.business_name,
-            business_address=self.GetAddressForService(service.id),
-            reviews=self.GetReviewsForService(service.id),
-            business_hours=self.GetHoursForService(service.id),
-            operating_cities=self.GetCitiesForService(service.id),
-            work_types=self.GetJobForService(service.id)
+            business_address=service.address,
+            reviews=service.reviews,
+            business_hours=service.hours,
+            operating_cities=service.cities,
+            work_types=service.jobs
         )
 
     @functionLogger
@@ -122,55 +87,35 @@ class ServicesService:
             review.rating_score for review in createService.reviews
         ) / len(createService.reviews)
 
-        serviceRepo = Services(self.session)
-        service = serviceRepo.Create(
-            createService.business_name,
-            review_rating,
-            hash_value
-        )
+        service = Services(review_rating, self.session)
 
         for city in createService.operating_cities:
-            cityRepo = Cities(
-                self.session
-            )
-            cityRepo.Create(service.id, city.city_name)
+            cityRepo = Cities(city.city_name)
+            service.cities.append(cityRepo)
 
         for review in createService.reviews:
             reviewRepo = Reviews(
-                self.session
-            )
-            reviewRepo.Create(
                 rating_score=review.rating_score,
-                customer_comment=review.customer_comment,
-                service_id=service.id
+                customer_comment=review.customer_comment
             )
+            service.reviews.append(reviewRepo)
 
         for job in createService.work_types:
             jobRepo = Jobs(
-                self.session
-            )
-            jobRepo.Create(
                 rating_score=review.rating_score,
-                customer_comment=review.customer_comment,
-                service_id=service.id
+                customer_comment=review.customer_comment
             )
+            service.jobs.append(jobRepo)
 
         for hours in createService.business_hours:
             hourRepo = Hours(
-                self.session
-            )
-            hourRepo.Create(
-                service_id=service.id,
                 day_of_week=hours.day_of_week,
                 open_at=hours.open_at,
                 close_at=hours.close_at
             )
+            service.hours.append(hourRepo)
 
         addressRepo = Addresses(
-            self.session
-        )
-        addressRepo.Create(
-            service_id=service.id,
             address_line_1=createService.business_address.address_line_1,
             address_line_2=createService.business_address.address_line_2,
             city=createService.business_address.city,
@@ -178,5 +123,8 @@ class ServicesService:
             .state_abbreviation,
             postal=createService.business_address.postal
         )
+        service.address.append(addressRepo)
+
+        service.Create(self.session)
 
         return self.GetModelForService(service, self.session)
