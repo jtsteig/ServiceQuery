@@ -21,10 +21,14 @@ class Services(Base):
 
     def __init__(
                     self,
+                    business_name,
                     review_rating,
+                    hash_value,
                     session
     ):
         self.query = session.query(Services)
+        self.business_name = business_name
+        self.hash_value = hash_value
         self.review_rating = review_rating
         self.session = session
 

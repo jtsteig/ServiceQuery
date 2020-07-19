@@ -13,7 +13,7 @@ from model.servicemodel import Service
 
 class ServicesService:
     def __init__(self, session):
-        self.serviceRepo = Services(0, session)
+        self.serviceRepo = Services(0, '', session)
         self.session = session
 
     @classmethod
@@ -95,7 +95,12 @@ class ServicesService:
             review.rating_score for review in createService.reviews
         ) / len(createService.reviews)
 
-        service = Services(review_rating, self.session)
+        service = Services(
+            createService.business_name,
+            hash_value,
+            review_rating,
+            self.session
+        )
 
         for city in createService.operating_cities:
             cityRepo = Cities(city)
