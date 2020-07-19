@@ -73,7 +73,7 @@ class Services(Base):
         session.flush()
 
     @functionLogger
-    def SortByName(self, descending=False):
+    def SortByName(self, descending):
         if descending:
             self.query = self.query\
                 .order_by(self.name.desc())

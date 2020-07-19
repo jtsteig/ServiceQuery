@@ -22,6 +22,14 @@ class ServicesService:
         Services.DeleteAll(session)
 
     @functionLogger
+    def ApplySorting(self, sortBy, descending):
+        if sortBy == 'name':
+            self.serviceRepo = self.serviceRepo.SortByName(descending)
+        if sortBy == 'rating':
+            self.serviceRepo = self.serviceRepo.SortByRating(descending)
+        return self
+
+    @functionLogger
     def FilterByName(self, name):
         self.serviceRepo = self.serviceRepo.FilterByName(name)
         return self
@@ -42,7 +50,7 @@ class ServicesService:
         return self
 
     @functionLogger
-    def FilterById(self, service_id, session):
+    def FilterById(self, service_id):
         self.serviceRepo = self.serviceRepo.FilterById(service_id)
         return self
 

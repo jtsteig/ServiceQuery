@@ -16,6 +16,7 @@ logger.setLevel(logging.INFO)
 serviceSchema = ServiceSchema()
 
 
+@functionLogger
 def getOffset(event):
     if event.get('queryStringParameters') is not None:
         if 'offset' in event['queryStringParameters']:
@@ -23,6 +24,7 @@ def getOffset(event):
     return 0
 
 
+@functionLogger
 def getLimit(event):
     if event.get('queryStringParameters') is not None:
         if 'limit' in event['queryStringParameters']:
@@ -30,6 +32,7 @@ def getLimit(event):
     return 10
 
 
+@functionLogger
 def applyFiltersOnQueries(event, service):
     if event.get('queryStringParameters') is not None:
         for parameter, value in event['queryStringParameters'].items():
@@ -39,13 +42,29 @@ def applyFiltersOnQueries(event, service):
     return service
 
 
+@functionLogger
+def getSortArgs(event):
+    sortBy = None
+    descending = False
+    if event.get('queryStringParameters') is not None:
+        sortVal = event.get('queryStringParameters').get('sort_by')
+        if sortVal is not None:
+            sortArgs = sortVal.split('|')
+            descending = len(sortArgs) > 1 and sortArgs[1] == 'desc'
+            sortBy = sortArgs[0]
+    return sortBy, descending
+
+
 @lambda_handler.handle("get", path="/service")
 @functionLogger
 def handleGetAllServices(event):
     session = Session()
+    sort_by, descending = getSortArgs(event)
     try:
         services = ServicesService(
             session
+        ).ApplySorting(
+            sort_by, descending
         ).Results(
             getLimit(event),
             getOffset(event)
@@ -65,20 +84,28 @@ def handleGetAllServices(event):
 
 @lambda_handler.handle("get", path="/service/filter")
 @functionLogger
-def handleFiter(event):
+def handleFilterServices(event):
+    session = Session()
+    sort_by, descending = getSortArgs(event)
     try:
         session = Session()
         service = ServicesService(session)
         filteredServices = applyFiltersOnQueries(
             event,
             service
+        ).ApplySorting(
+            sort_by, descending
         ).Results(
             getLimit(event),
             getOffset(event)
         )
+        results = [
+            json.loads(
+                serviceSchema.dumps(i)) for i in filteredServices
+        ]
         return {
             'statusCode': 200,
-            'body': serviceSchema.dumps(filteredServices)
+            'body': results
         }
     except Exception:
         return {
