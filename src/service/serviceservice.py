@@ -70,11 +70,12 @@ class ServicesService:
         return Service(
             business_name=service.business_name,
             business_address=service.address.first(),
-            reviews=service.reviews.all(),
-            business_hours=service.hours.all(),
-            operating_cities=service.cities.all(),
-            work_types=service.jobs.all(),
-            review_rating=service.review_rating
+            reviews=service.reviews,
+            business_hours=service.hours,
+            operating_cities=service.cities,
+            work_types=service.jobs,
+            review_rating=service.review_rating,
+            id=service.id
         )
 
     @functionLogger
@@ -83,6 +84,10 @@ class ServicesService:
             createService
     ):
         service_schema = ServiceSchema()
+        createService.review_rating = sum(
+            review.rating_score for review in createService.reviews
+        ) / len(createService.reviews)
+
         hash_value = hashlib.md5(
             service_schema.dumps(
                 createService
@@ -92,13 +97,9 @@ class ServicesService:
         if Services.HashValueExists(hash_value, self.session):
             return
 
-        review_rating = sum(
-            review.rating_score for review in createService.reviews
-        ) / len(createService.reviews)
-
         service = Services(
             createService.business_name,
-            review_rating,
+            createService.review_rating,
             hash_value,
             self.session
         )

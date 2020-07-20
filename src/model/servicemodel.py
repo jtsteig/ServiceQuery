@@ -1,13 +1,14 @@
 class Service:
     def __init__(
-                    self,
-                    business_name,
-                    business_address,
-                    reviews,
-                    business_hours,
-                    operating_cities,
-                    work_types,
-                    review_rating=0
+        self,
+        business_name,
+        business_address,
+        reviews,
+        business_hours,
+        operating_cities,
+        work_types,
+        id=0,
+        review_rating=0
     ):
         self.business_hours = business_hours
         self.business_name = business_name
@@ -15,3 +16,5 @@ class Service:
         self.reviews = reviews
         self.operating_cities = operating_cities
         self.work_types = work_types
+        self.review_rating = review_rating
+        self.id = id

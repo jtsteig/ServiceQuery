@@ -1,6 +1,6 @@
 from utils.functionlogger import functionLogger
 
-from sqlalchemy import Column, String, Integer, Numeric
+from sqlalchemy import Column, String, Integer, Float
 from sqlalchemy.orm import relationship
 from service.db_base import Base, engine
 
@@ -10,13 +10,13 @@ class Services(Base):
 
     id = Column(Integer, primary_key=True)
     business_name = Column(String, nullable=False)
-    review_rating = Column(Numeric, nullable=False)
+    review_rating = Column(Float, nullable=False)
     hash_value = Column(String, nullable=False)
 
-    jobs = relationship("Jobs", backref="services", lazy="dynamic")
-    reviews = relationship("Reviews", backref="services", lazy="dynamic")
-    cities = relationship("Cities", backref="services", lazy="dynamic")
-    hours = relationship("Hours", backref="services", lazy="dynamic")
+    jobs = relationship("Jobs", backref="services")
+    reviews = relationship("Reviews", backref="services")
+    cities = relationship("Cities", backref="services")
+    hours = relationship("Hours", backref="services")
     address = relationship("Addresses", backref="services", lazy="dynamic")
 
     def __init__(

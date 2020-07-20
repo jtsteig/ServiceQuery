@@ -20,5 +20,5 @@ def functionLogger(fn):
                                 traceback.format_exc()
                             )
                     )
-        logger.info('Done running %s' % fn.__name__)
+        logger.info('Done running {0}'.format(fn.__name__))
     return wrapper
