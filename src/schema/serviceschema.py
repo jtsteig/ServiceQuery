@@ -48,6 +48,7 @@ class ReviewSchema(Schema):
 class ServiceSchema(Schema):
     id = fields.Str(required=False)
     business_name = fields.Str(data_key="businessName", required=True)
+    review_rating = fields.Decimal(required=False)
     business_hours = fields.List(
                        fields.Nested(BusinessHoursSchema),
                        data_key="businessHours",

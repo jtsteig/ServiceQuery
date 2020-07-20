@@ -13,7 +13,7 @@ from model.servicemodel import Service
 
 class ServicesService:
     def __init__(self, session):
-        self.serviceRepo = Services(0, '', session)
+        self.serviceRepo = Services(0, '', '', session)
         self.session = session
 
     @classmethod
@@ -69,11 +69,12 @@ class ServicesService:
     def GetModelForService(self, service):
         return Service(
             business_name=service.business_name,
-            business_address=service.address,
-            reviews=service.reviews,
-            business_hours=service.hours,
-            operating_cities=service.cities,
-            work_types=service.jobs
+            business_address=service.address.first(),
+            reviews=service.reviews.all(),
+            business_hours=service.hours.all(),
+            operating_cities=service.cities.all(),
+            work_types=service.jobs.all(),
+            review_rating=service.review_rating
         )
 
     @functionLogger
@@ -97,8 +98,8 @@ class ServicesService:
 
         service = Services(
             createService.business_name,
-            hash_value,
             review_rating,
+            hash_value,
             self.session
         )
 
@@ -137,4 +138,4 @@ class ServicesService:
 
         service.Create(self.session)
 
-        return self.GetModelForService(service, self.session)
+        return self.GetModelForService(service)

@@ -29,7 +29,7 @@ def getLimit(event):
     if event.get('queryStringParameters') is not None:
         if 'limit' in event['queryStringParameters']:
             return event['queryStringParameters']['limit']
-    return 10
+    return 1000000
 
 
 @functionLogger
@@ -116,15 +116,14 @@ def handleFilterServices(event):
 
 @lambda_handler.handle("get", path="/service/<int:id>")
 @functionLogger
-def handleGetById(event, service_id):
+def handleGetById(event, id):
     try:
         session = Session()
         service = ServicesService(
             session
         ).FilterById(
-            service_id, session
+            id
         ).Results(
-            session=session,
             offset=0,
             limit=1)
 
@@ -136,7 +135,7 @@ def handleGetById(event, service_id):
 
         return {
             'statusCode': 200,
-            'body': serviceSchema.dump(service)
+            'body': json.loads(serviceSchema.dumps(service))
         }
     except Exception:
         return {

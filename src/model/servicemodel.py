@@ -6,7 +6,8 @@ class Service:
                     reviews,
                     business_hours,
                     operating_cities,
-                    work_types
+                    work_types,
+                    review_rating=0
     ):
         self.business_hours = business_hours
         self.business_name = business_name
