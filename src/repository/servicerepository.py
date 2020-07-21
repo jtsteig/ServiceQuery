@@ -88,7 +88,14 @@ class Services(Base):
     @functionLogger
     def FilterByRating(self, rating):
         self.query = self.query\
-            .filter(self.review_rating >= rating)
+            .filter(Services.review_rating >= rating)
+        return self
+
+    @functionLogger
+    def FilterByWeekday(self, workday):
+        self.query = self.query\
+            .join(Services.hours, aliased=True)\
+            .filter_by(day_of_week=workday)
         return self
 
     @classmethod
@@ -108,13 +115,13 @@ class Services(Base):
         return self
 
     @functionLogger
-    def SortByRating(self, descending=False):
+    def SortByRating(self, descending):
         if descending:
             self.query = self.query\
-                .order_by(Services.review_rating)
+                .order_by(Services.review_rating.desc())
         else:
             self.query = self.query\
-                .order_by(Services.review_rating.desc())
+                .order_by(Services.review_rating)
         return self
 
     @classmethod

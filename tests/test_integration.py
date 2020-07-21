@@ -47,16 +47,16 @@ class UserIntegrationTests(unittest.TestCase):
                 "Centennial",
                 "Parker"
             ],
-            "workTypes": ["Maid Service", "House Cleaning", "Moving Services"],
+            "workTypes": ["Testing"],
             "reviews": [{
-                "ratingScore": 4.5,
+                "ratingScore": 2,
                 "customerComment":
                 "Use them weekly to clean our home. Do a great job every time"
             }, {
-                "ratingScore": 4,
+                "ratingScore": 2,
                 "customerComment": "Helped us move homes, very timely"
             }, {
-                "ratingScore": 4,
+                "ratingScore": 2,
                 "customerComment": "On time, did a good job"
             }]
         }, {
@@ -107,10 +107,10 @@ class UserIntegrationTests(unittest.TestCase):
                 "Packing"
             ],
             "reviews": [{
-                "ratingScore": 4,
+                "ratingScore": 5,
                 "customerComment": "Move out cleaning"
             }, {
-                "ratingScore": 2,
+                "ratingScore": 5,
                 "customerComment":
                 "Broke our dishes because they didn't pack right"
             }, {
@@ -138,10 +138,6 @@ class UserIntegrationTests(unittest.TestCase):
                 "dayOfWeek": "Friday",
                 "open": 8,
                 "close": 6
-            }, {
-                "dayOfWeek": "Saturday",
-                "open": 8,
-                "close": 6
             }],
             "businessAddress": {
                 "addressLine1": "23456 5th Ave",
@@ -151,11 +147,7 @@ class UserIntegrationTests(unittest.TestCase):
                 "postal": "80640"
             },
             "operatingCities": [
-                "Denver",
-                "Commerce City",
-                "Thornton",
-                "Henderson",
-                "Northglenn"
+                "Berthoud"
             ],
             "workTypes": ["Packing", "Moving Services"],
             "reviews": [{
@@ -191,9 +183,60 @@ class UserIntegrationTests(unittest.TestCase):
         self.assertEqual(respBody[0].get('businessName'), 'Sample Business #1')
 
     def test_sort_name_service(self):
-        resp = test_utils.make_get_request('service?sort=name', '')
+        resp = test_utils.make_get_request('service?sort_by=name', '')
         respJson = resp.json()
         self.assertEqual(respJson.get('statusCode'), 200)
         respBody = respJson.get('body')
 
-        self.assertEqual(respBody[0].get('businessName'), 'AAAA')
+        self.assertEqual(respBody[0].get('businessName'), 'AAAAA')
+
+    def test_sort_rating_service(self):
+        resp = test_utils.make_get_request('service?sort_by=rating', '')
+        respJson = resp.json()
+        self.assertEqual(respJson.get('statusCode'), 200)
+        respBody = respJson.get('body')
+
+        self.assertEqual(respBody[0].get('businessName'), 'Sample Business #1')
+
+    def test_filter_name_service(self):
+        resp = test_utils.make_get_request('service/filter?name=AAAAA', '')
+        respJson = resp.json()
+        self.assertEqual(respJson.get('statusCode'), 200)
+        respBody = respJson.get('body')
+
+        self.assertEqual(respBody[0].get('businessName'), 'AAAAA')
+
+    def test_filter_job_service(self):
+        resp = test_utils.make_get_request('service/filter?job=Testing', '')
+        respJson = resp.json()
+        self.assertEqual(respJson.get('statusCode'), 200)
+        respBody = respJson.get('body')
+
+        self.assertEqual(respBody[0].get('businessName'), 'Sample Business #1')
+
+    def test_filter_city_service(self):
+        resp = test_utils.make_get_request('service/filter?city=Berthoud', '')
+        respJson = resp.json()
+        self.assertEqual(respJson.get('statusCode'), 200)
+        respBody = respJson.get('body')
+
+        self.assertEqual(respBody[0].get('businessName'), 'AAAAA')
+
+    def test_filter_rating_service(self):
+        resp = test_utils.make_get_request('service/filter?rating=5', '')
+        respJson = resp.json()
+        self.assertEqual(respJson.get('statusCode'), 200)
+        respBody = respJson.get('body')
+
+        self.assertEqual(respBody[0].get('businessName'), 'Sample Business #2')
+
+    def test_filter_workday_service(self):
+        resp = test_utils.make_get_request(
+            'service/filter?weekday=Saturday',
+            ''
+        )
+        respJson = resp.json()
+        self.assertEqual(respJson.get('statusCode'), 200)
+        respBody = respJson.get('body')
+
+        self.assertEqual(respBody[0].get('businessName'), 'Sample Business #2')

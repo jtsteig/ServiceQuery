@@ -45,6 +45,11 @@ class ServicesService:
         return self
 
     @functionLogger
+    def FilterByWeekday(self, workday):
+        self.serviceRepo = self.serviceRepo.FilterByWeekday(workday)
+        return self
+
+    @functionLogger
     def FilterByCity(self, city):
         self.serviceRepo = self.serviceRepo.FilterByCity(city)
         return self
