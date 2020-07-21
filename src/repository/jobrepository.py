@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from service.db_base import Base, engine
 from repository.servicerepository import Services
 import logging
+from utils.functionlogger import functionLogger
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -23,6 +24,12 @@ class Jobs(Base):
 
     def __str__(self):
         return self.job_name
+
+    @classmethod
+    @functionLogger
+    def DeleteAll(self, session):
+        session.query(Jobs).delete()
+        session.flush()
 
 
 Base.metadata.create_all(engine)

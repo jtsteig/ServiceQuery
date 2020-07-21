@@ -13,11 +13,32 @@ class Services(Base):
     review_rating = Column(Float, nullable=False)
     hash_value = Column(String, nullable=False)
 
-    jobs = relationship("Jobs", backref="services")
-    reviews = relationship("Reviews", backref="services")
-    cities = relationship("Cities", backref="services")
-    hours = relationship("Hours", backref="services")
-    address = relationship("Addresses", backref="services", lazy="dynamic")
+    jobs = relationship(
+        "Jobs",
+        backref="services",
+        cascade="all, delete"
+    )
+    reviews = relationship(
+        "Reviews",
+        backref="services",
+        cascade="all, delete"
+    )
+    cities = relationship(
+        "Cities",
+        backref="services",
+        cascade="all, delete"
+    )
+    hours = relationship(
+        "Hours",
+        backref="services",
+        cascade="all, delete"
+    )
+    address = relationship(
+        "Addresses",
+        backref="services",
+        lazy="dynamic",
+        cascade="all, delete"
+    )
 
     def __init__(
                     self,
@@ -34,7 +55,7 @@ class Services(Base):
 
     @functionLogger
     def FilterById(self, service_id):
-        self.query.filter_by(id=service_id)
+        self.query.filter(Services.id == service_id)
         return self
 
     @functionLogger
@@ -113,6 +134,10 @@ class Services(Base):
             .limit(limit)\
             .offset(offset)\
             .all()
+
+    @functionLogger
+    def SingleResult(self):
+        return self.query.first()
 
 
 Base.metadata.create_all(engine)

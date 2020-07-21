@@ -19,6 +19,11 @@ class ServicesService:
     @classmethod
     @functionLogger
     def DeleteAll(self, session):
+        Reviews.DeleteAll(session)
+        Addresses.DeleteAll(session)
+        Jobs.DeleteAll(session)
+        Hours.DeleteAll(session)
+        Cities.DeleteAll(session)
         Services.DeleteAll(session)
 
     @functionLogger
@@ -64,6 +69,11 @@ class ServicesService:
         for result in results:
             ret.append(self.GetModelForService(result))
         return ret
+
+    @functionLogger
+    def SingleResult(self):
+        result = self.serviceRepo.SingleResult()
+        return self.GetModelForService(result)
 
     @functionLogger
     def GetModelForService(self, service):

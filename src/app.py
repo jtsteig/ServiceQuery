@@ -123,9 +123,7 @@ def handleGetById(event, id):
             session
         ).FilterById(
             id
-        ).Results(
-            offset=0,
-            limit=1)
+        ).SingleResult()
 
         session.commit()
         if service is None:
