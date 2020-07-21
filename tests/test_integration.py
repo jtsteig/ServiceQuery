@@ -117,7 +117,7 @@ class UserIntegrationTests(unittest.TestCase):
                 "ratingScore": 5
             }]
         }, {
-            "businessName": "Sample Business #3",
+            "businessName": "AAAAA",
             "businessHours": [{
                 "dayOfWeek": "Monday",
                 "open": 8,
@@ -188,4 +188,12 @@ class UserIntegrationTests(unittest.TestCase):
         self.assertEqual(respJson.get('statusCode'), 200)
         respBody = respJson.get('body')
 
-        self.assertEqual(respBody.get('businessName'), 'Sample Business #1')
+        self.assertEqual(respBody[0].get('businessName'), 'Sample Business #1')
+
+    def test_sort_name_service(self):
+        resp = test_utils.make_get_request('service?sort=name', '')
+        respJson = resp.json()
+        self.assertEqual(respJson.get('statusCode'), 200)
+        respBody = respJson.get('body')
+
+        self.assertEqual(respBody[0].get('businessName'), 'AAAA')

@@ -8,9 +8,13 @@ class FilterFactory:
         self.filter_value = urllib.parse.unquote(filter_value)
 
     def AppendFilter(self, service):
-        return {
-            'name': service.FilterByName,
-            'job': service.FilterByJobs,
-            'city': service.FilterByCity,
-            'rating': service.FilterByRating
-        }[self.filter_key](self.filter_value)
+        if service.filter_key == 'name':
+            return service.FilterByName
+        elif service.filter_key == 'job':
+            return service.FilterByJobs
+        elif service.filter_key == 'city':
+            return service.FilterByCity
+        elif service.filter_key == 'rating':
+            return service.FilterByRating
+        else:
+            return service
